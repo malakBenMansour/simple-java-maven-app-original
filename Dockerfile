@@ -10,4 +10,4 @@ WORKDIR /app
 # in pom.xml file the tag <finalName> is the .jar file name
 COPY --from=build /app/target.jar /app
 EXPOSE 8080
-CMD ["java", "-jar", "devops-integration.jar"]
+CMD ["java", "-jar", "target.jar"]
