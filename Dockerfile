@@ -1,19 +1,17 @@
-# Use OpenJDK 11 as the base image
-FROM adoptopenjdk:11-jdk-hotspot
+FROM maven:3.5.4-jdk-11-slim as maven
 
-# Set the working directory in the container
-WORKDIR /app
+COPY ./pom.xml ./pom.xml
 
-# Install Maven
-RUN apt-get update && \
-    apt-get install -y maven
+COPY ./src ./src
 
-# Copy the Java application source code and pom.xml into the container
-COPY ./my-app /app
-COPY ./pom.xml /app
+RUN mvn dependency:go-offline -B
 
-# Build the Java application using Maven
 RUN mvn package
 
-# Set the command to run your application
-CMD ["java", "-jar", "target/my-app-1.0-SNAPSHOT.jar"]
+FROM adoptopenjdk:11-jre-hotspot
+
+WORKDIR /adevguide
+
+COPY --from=maven target/SimpleJavaProject-*.jar ./SimpleJavaProject.jar
+
+CMD ["java", "-jar", "./SimpleJavaProject.jar"]
